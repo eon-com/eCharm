@@ -2,6 +2,7 @@
 
 import logging
 import os
+from urllib.parse import urlparse, urljoin
 
 import requests as requests
 from bs4 import BeautifulSoup
@@ -31,6 +32,11 @@ def get_bna_data(tmp_data_path):
     #   https://data.bundesnetzagentur.de/Bundesnetzagentur/SharedDocs/Downloads/DE/Sachgebiete/Energie/Unternehmen_Institutionen/E_Mobilitaet/ladesaeulenregister.xlsx
     download_link_elem = soup.find("a", class_="FTxlsx")
     download_link_url = download_link_elem.get("href")
+
+    is_absolute_url = bool(urlparse(download_link_url).netloc)
+    if not is_absolute_url:
+        download_link_base_url = soup.find("base").get("href")
+        download_link_url = urljoin(download_link_base_url, download_link_url)
 
     logger.info(f"Downloading BNA data from {download_link_url}...")
     download_file(download_link_url, tmp_data_path)
