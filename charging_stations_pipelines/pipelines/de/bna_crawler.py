@@ -20,23 +20,7 @@ def get_bna_data(tmp_data_path):
     :type tmp_data_path: str
     :return: None
     """
-    # Base url & header
-    headers = {"User-Agent": "Mozilla/5.0"}
-    base_url = "https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/start.html"
-
-    r = requests.get(base_url, headers=headers)
-    soup = BeautifulSoup(r.content, "html.parser")
-
-    # Lookup for the link in the html
-    # Example URL from "href" attribute:
-    #   https://data.bundesnetzagentur.de/Bundesnetzagentur/SharedDocs/Downloads/DE/Sachgebiete/Energie/Unternehmen_Institutionen/E_Mobilitaet/ladesaeulenregister.xlsx
-    download_link_elem = soup.find("a", class_="FTxlsx")
-    download_link_url = download_link_elem.get("href")
-
-    is_absolute_url = bool(urlparse(download_link_url).netloc)
-    if not is_absolute_url:
-        download_link_base_url = soup.find("base").get("href")
-        download_link_url = urljoin(download_link_base_url, download_link_url)
+    download_link_url = "https://data.bundesnetzagentur.de/Bundesnetzagentur/SharedDocs/Downloads/DE/Sachgebiete/Energie/Unternehmen_Institutionen/E_Mobilitaet/Ladesaeulenregister.xlsx"
 
     logger.info(f"Downloading BNA data from {download_link_url}...")
     download_file(download_link_url, tmp_data_path)
